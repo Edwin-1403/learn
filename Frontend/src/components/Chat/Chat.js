@@ -1,17 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import './Chat.css';
-import { Avatar, IconButton } from '@mui/material';
-import { AttachFile, InsertEmoticon, MoreVert, SearchOutlined } from '@mui/icons-material';
+import React, { useEffect, useState } from "react";
+import "./Chat.css";
+import { Avatar, IconButton } from "@mui/material";
+import {
+  AttachFile,
+  InsertEmoticon,
+  MoreVert,
+  SearchOutlined,
+} from "@mui/icons-material";
+import {useStateValue} from "../ContextApi/StateProvider";
+import axios from "axios";
 
 const Chat = () => {
-  const [seed, setSeed] = useState('');
+  const [seed, setSeed] = useState("");
+  const [input, setInput] = useState("");
+  const [{user}] = useStateValue()
 
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
   }, []);
 
+const sendMessage = async (e) => {
+  e.preventDefault();
+  console.log(input);
+
+  if (!input) {
+    return
+  }
+
+  await axios.post('http://localhost:5000/messages/new', {
+    message:input,
+    name:user.displayName,
+    timestamp:new Date(),
+    uid:user.uid,
+    roomId:"65114239688f3d2f78c19527"
+  })
+}
   return (
-    <div className='chat'>
+    <div className="chat">
       <div className="chat_header">
         <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className="chat_headerInfo">
@@ -35,18 +60,18 @@ const Chat = () => {
       </div>
 
       <div className="chat_body">
-        <p className='chat_message'>
-          <span className='chat_name'>Edwin Cyril </span>
+        <p className="chat_message">
+          <span className="chat_name">Edwin Cyril </span>
           Hello from Edwin
-          <span className='chat_timestamp'>
+          <span className="chat_timestamp">
             {new Date().toString().slice(0, 25)}
           </span>
         </p>
 
-        <p className='chat_message chat_receiver'>
-          <span className='chat_name'>John </span>
+        <p className="chat_message chat_receiver">
+          <span className="chat_name">John </span>
           Hello from Mate
-          <span className='chat_timestamp'>
+          <span className="chat_timestamp">
             {new Date().toString().slice(0, 25)}
           </span>
         </p>
@@ -54,13 +79,20 @@ const Chat = () => {
       <div className="chat_footer">
         <InsertEmoticon />
         <form>
-          <input type="text" placeholder='Type a message' />
-          <button type='submit'>Send a message</button>
+          <input
+            type="text"
+            placeholder="Type a message"
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
+          />
+          <button 
+          type="submit"
+          onClick={sendMessage}
+          >Send a message</button>
         </form>
-
       </div>
     </div>
-  )
+  );
 };
 
-export default Chat
+export default Chat;
