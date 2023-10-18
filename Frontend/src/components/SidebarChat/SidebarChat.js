@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./SidebarChat.css";
 import { Avatar } from "@mui/material";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
-const SidebarChat = ({ addNewChat }) => {
+const SidebarChat = ({ addNewChat, name, id }) => {
   const [seed, setSeed] = useState("");
 
   useEffect(() => {
@@ -24,12 +25,14 @@ const SidebarChat = ({ addNewChat }) => {
   };
 
   return !addNewChat ? (
-    <div className="sidebarChat">
-      <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
-      <div className="sidebarChat__info" >
-        <h2>Edwin</h2>
+    <Link to={`/rooms/${id}`}>
+      <div className="sidebarChat">
+        <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
+        <div className="sidebarChat__info">
+          <h2>{name}</h2>
+        </div>
       </div>
-    </div>
+    </Link>
   ) : (
     <div className="sidebarChat" onClick={createChat}>
       <h2>Add new chat</h2>

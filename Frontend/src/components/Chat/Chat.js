@@ -7,41 +7,59 @@ import {
   MoreVert,
   SearchOutlined,
 } from "@mui/icons-material";
-import {useStateValue} from "../ContextApi/StateProvider";
+import { useStateValue } from "../ContextApi/StateProvider";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const Chat = () => {
   const [seed, setSeed] = useState("");
   const [input, setInput] = useState("");
-  const [{user}] = useStateValue()
+  const [roomName, setRoomName] = useState("");
+  const [updatedAt, setUpdatedAt] = useState("");
+  const [{ user }] = useStateValue();
+  const { roomId } = useParams();
+
+  useEffect(() => {
+    if (roomId) {
+      axios.get(`http://localhost:5000/rooms/${roomId}`).then((response) => {
+        setRoomName(response.data.name);
+        setUpdatedAt(response.data.updatedAt);
+      });
+    }
+  }, [roomId]);
 
   useEffect(() => {
     setSeed(Math.floor(Math.random() * 5000));
   }, []);
 
-const sendMessage = async (e) => {
-  e.preventDefault();
-  console.log(input);
+  const sendMessage = async (e) => {
+    e.preventDefault(); //using for unwanted refresh
+    console.log(input);
 
-  if (!input) {
-    return
-  }
+    if (!input) {
+      return;
+    }
 
-  await axios.post('http://localhost:5000/messages/new', {
-    message:input,
-    name:user.displayName,
-    timestamp:new Date(),
-    uid:user.uid,
-    roomId:"65114239688f3d2f78c19527"
-  })
-}
+    await axios.post("http://localhost:5000/messages/new", {
+      message: input,
+      name: user.displayName,
+      timestamp: new Date(),
+      uid: user.uid,
+      roomId: roomId,
+    });
+    setInput("");
+  };
   return (
     <div className="chat">
       <div className="chat_header">
         <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className="chat_headerInfo">
-          <h3>React Developers</h3>
-          <p>Last seen at {new Date().toString().slice(0, 25)}</p>
+          <h3>{roomName ? roomName : "Welcome to WhatsApp"}</h3>
+          <p>
+            {updatedAt
+              ? `Last seen at ${new Date(updatedAt).toString().slice(0, 25)}`
+              : "Click on any Group"}
+          </p>
         </div>
 
         <div className="chat_headerRight">
@@ -85,10 +103,9 @@ const sendMessage = async (e) => {
             onChange={(e) => setInput(e.target.value)}
             value={input}
           />
-          <button 
-          type="submit"
-          onClick={sendMessage}
-          >Send a message</button>
+          <button type="submit" onClick={sendMessage}>
+            Send a message
+          </button>
         </form>
       </div>
     </div>

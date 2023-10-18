@@ -18,7 +18,7 @@ const App = () => {
           <Sidebar />
             <Routes>
               <Route path='/' element={<Chat/>} />
-              <Route path='/rooms/:roomId' element={<Chat/>} />
+              <Route path='/rooms/:roomId' element={<Chat/>} /> {/*:means dynamic value*/}
             </Routes>
           </Router>
         </div>

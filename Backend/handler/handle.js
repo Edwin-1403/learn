@@ -37,3 +37,28 @@ exports.New_Messages = async (req, res) => {
     });
   }
 };
+
+exports.All_rooms = async (req, res) => {
+  try {
+    const group_detail = await Rooms.find({});
+    return res.status(200).send(group_detail);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+exports.Rooms_info = async (req, res) => {
+  try {
+    const data = await Rooms.findOne({ _id: req.params.id }).exec();
+    if (!data) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+    return res.status(200).json(data);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
