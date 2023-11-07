@@ -11,11 +11,13 @@ import { useStateValue } from "../ContextApi/StateProvider";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
+
 const Chat = () => {
   const [seed, setSeed] = useState("");
   const [input, setInput] = useState("");
   const [roomName, setRoomName] = useState("");
   const [updatedAt, setUpdatedAt] = useState("");
+  const [messages, setMessages] = useState([]);
   const [{ user }] = useStateValue();
   const { roomId } = useParams();
 
@@ -25,6 +27,10 @@ const Chat = () => {
         setRoomName(response.data.name);
         setUpdatedAt(response.data.updatedAt);
       });
+      axios.get(`http://localhost:5000/messages/${roomId}`).then((response) => {
+        setMessages(response.data)
+        
+    });
     }
   }, [roomId]);
 
@@ -78,21 +84,18 @@ const Chat = () => {
       </div>
 
       <div className="chat_body">
-        <p className="chat_message">
-          <span className="chat_name">Edwin Cyril </span>
-          Hello from Edwin
+        {
+          messages.map((message,index)=>(
+            <p className={`chat_message ${message.uid === user.uid && "chat_receiver"}`} key={index}>
+          <span className="chat_name">{message.name} </span>
+          {message.message}
           <span className="chat_timestamp">
-            {new Date().toString().slice(0, 25)}
+            {new Date(message.timestamp).toString().slice(0, 25)}
           </span>
         </p>
+          ))
+        }
 
-        <p className="chat_message chat_receiver">
-          <span className="chat_name">John </span>
-          Hello from Mate
-          <span className="chat_timestamp">
-            {new Date().toString().slice(0, 25)}
-          </span>
-        </p>
       </div>
       <div className="chat_footer">
         <InsertEmoticon />

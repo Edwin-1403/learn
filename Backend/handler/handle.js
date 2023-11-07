@@ -52,13 +52,24 @@ exports.All_rooms = async (req, res) => {
 
 exports.Rooms_info = async (req, res) => {
   try {
-    const data = await Rooms.findOne({ _id: req.params.id }).exec();
+    const data = await Rooms.findOne({ _id: req.params.id });
     if (!data) {
       return res.status(404).json({ message: "Room not found" });
     }
     return res.status(200).json(data);
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.Messages_info = async (req, res) => {
+  try {
+    const data = await Messages.find({ roomId: req.params.id }).exec();
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
